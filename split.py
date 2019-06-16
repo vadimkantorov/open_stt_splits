@@ -31,7 +31,7 @@ parser.add_argument('--sources_easy', nargs = '*', default = [
 args = parser.parse_args()
 
 meta = {os.path.basename(s[-2]) : (s[1].split('/')[1], l.strip()) for l in open(args.metadata_file) for s in [l.split(',')] if s[0]}
-bad = set(os.path.basename(s[1].strip()) for b in bad for l in open(b) for s in [l.split(',')] if s[0])
+bad = set(os.path.basename(s[1].strip()) for b in args.bad for l in open(b) for s in [l.split(',')] if s[0])
 good = {k : meta[k] for k in meta.keys() - args.bad}
 sourced = {k : [t[1] for t in g] for k, g in itertools.groupby(sorted([(source, line) for k, (source, line) in good.items()], key = lambda t: t[0]), key = lambda t: t[0])}
 
@@ -44,9 +44,9 @@ def split(suffix, sources, split_train = 0.9, split_val = 0.1):
 		c = int(len(lines) * split_train)
 		train.extend(lines[:c])
 		val.extend(lines[c:])
-	open('train_{suffix}.txt', 'w').write('\n'.join(train))
-	open('val_{suffix}.txt', 'w').write('\n'.join(val))
+	open(f'train_{suffix}.txt', 'w').write('\n'.join(train))
+	open(f'val_{suffix}.txt', 'w').write('\n'.join(val))
 
 split('ok', args.sources_ok)
 split('easy', args.sources_easy)
-plit('hard', args.source_hard)
+split('hard', args.sources_hard)
