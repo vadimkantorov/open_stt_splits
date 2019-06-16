@@ -1,4 +1,5 @@
 import os
+import gzip
 import random
 import itertools
 import argparse
@@ -28,6 +29,8 @@ parser.add_argument('--sources_ok', nargs = '*', default = [
 parser.add_argument('--sources_easy', nargs = '*', default = [
 	'voxforge_ru'
 ])
+parser.add_argument('--split_train', defaut = 0.9)
+parser.add_argument('--split_val', defaut = 0.1)
 args = parser.parse_args()
 
 meta = {os.path.basename(s[-2]) : (s[1].split('/')[1], l.strip()) for l in open(args.metadata_file) for s in [l.split(',')] if s[0]}
@@ -35,18 +38,18 @@ bad = set(os.path.basename(s[1].strip()) for b in args.bad for l in open(b) for 
 good = {k : meta[k] for k in meta.keys() - args.bad}
 sourced = {k : [t[1] for t in g] for k, g in itertools.groupby(sorted([(source, line) for k, (source, line) in good.items()], key = lambda t: t[0]), key = lambda t: t[0])}
 
-def split(suffix, sources, split_train = 0.9, split_val = 0.1):
+for suffix in ['ok', 'easy', 'hard']:
 	train, val = [], []
-	for source in sources:
+	for source in getattr(args, 'sources_' + suffix):
 		lines = sourced[source]
 		random.seed(1)
 		random.shuffle(lines)
-		c = int(len(lines) * split_train)
+		c = int(len(lines) * args.split_Train)
 		train.extend(lines[:c])
 		val.extend(lines[c:])
-	open(f'train_{suffix}.txt', 'w').write('\n'.join(train))
-	open(f'val_{suffix}.txt', 'w').write('\n'.join(val))
 
-split('ok', args.sources_ok)
-split('easy', args.sources_easy)
-split('hard', args.sources_hard)
+	with gzip.open(f'train_{suffix}.txt.gz', 'wt') as f:
+		f.write('\n'.join(train))
+	with gzip.open(f'val_{suffix}.txt.gz', 'wt') as f:
+		f.write('\n'.join(val))
+
