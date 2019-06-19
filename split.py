@@ -15,22 +15,23 @@ parser.add_argument('--sources_hard', nargs = '*', default = [
 	'asr_public_phone_calls_1',
 	'asr_public_stories_2',
 	'asr_public_stories_1',
+	'public_youtube700',
 ])
 parser.add_argument('--sources_ok', nargs = '*', default = [
-	'private_buriy_audiobooks_2', # audiobooks_2
-	'public_youtube700',
-	'tts_russian_addresses_rhvoice_4voices', # tts_russian_addresses
 	'public_series_1',
 	'ru_ru',
 	'voxforge_ru',
 	'russian_single',
-	'public_lecture_1'
+	'public_lecture_1',
+	'private_buriy_audiobooks_2', # audiobooks_2
+#	'tts_russian_addresses_rhvoice_4voices', # tts_russian_addresses
 ])
 parser.add_argument('--sources_easy', nargs = '*', default = [
 	'voxforge_ru'
 ])
-parser.add_argument('--split_train', defaut = 0.9)
-parser.add_argument('--split_val', defaut = 0.1)
+parser.add_argument('--split_train', type = float, default = 0.9)
+parser.add_argument('--split_val', type = float, default = 0.1)
+parser.add_argument('--max_samples', type = int, default = 200000)
 args = parser.parse_args()
 
 meta = {os.path.basename(s[-2]) : (s[1].split('/')[1], l.strip()) for l in open(args.metadata_file) for s in [l.split(',')] if s[0]}
@@ -44,12 +45,19 @@ for suffix in ['ok', 'easy', 'hard']:
 		lines = sourced[source]
 		random.seed(1)
 		random.shuffle(lines)
-		c = int(len(lines) * args.split_Train)
-		train.extend(lines[:c])
-		val.extend(lines[c:])
+		c = int(len(lines) * args.split_train)
+		if len(train) + c < args.max_samples:
+			train.extend(lines[:c])
+			val.extend(lines[c:])
+		else:
+			c = args.max_samples - len(train)
+			train.extend(lines[:c])
+			val.extend(lines[c: (c + int(args.split_val * c))])
 
 	with gzip.open(f'train_{suffix}.txt.gz', 'wt') as f:
+		print('train', suffix, len(train))
 		f.write('\n'.join(train))
 	with gzip.open(f'val_{suffix}.txt.gz', 'wt') as f:
 		f.write('\n'.join(val))
+		print('val', suffix, len(val))
 
