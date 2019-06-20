@@ -1,4 +1,5 @@
 import os
+import base64
 import gzip
 import random
 import itertools
@@ -39,25 +40,41 @@ bad = set(os.path.basename(s[1].strip()) for b in args.bad for l in open(b) for 
 good = {k : meta[k] for k in meta.keys() - args.bad}
 sourced = {k : [t[1] for t in g] for k, g in itertools.groupby(sorted([(source, line) for k, (source, line) in good.items()], key = lambda t: t[0]), key = lambda t: t[0])}
 
-for suffix in ['ok', 'easy', 'hard']:
-	train, val = [], []
-	for source in getattr(args, 'sources_' + suffix):
-		lines = sourced[source]
-		random.seed(1)
-		random.shuffle(lines)
-		c = int(len(lines) * args.split_train)
-		if len(train) + c < args.max_samples:
-			train.extend(lines[:c])
-			val.extend(lines[c:])
-		else:
-			c = args.max_samples - len(train)
-			train.extend(lines[:c])
-			val.extend(lines[c: (c + int(args.split_val * c))])
+#for suffix in ['ok', 'easy', 'hard']:
+#	train, val = [], []
+#	for source in getattr(args, 'sources_' + suffix):
+#		lines = sourced[source]
+#		random.seed(1)
+#		random.shuffle(lines)
+#		c = int(len(lines) * args.split_train)
+#		if len(train) + c < args.max_samples:
+#			train.extend(lines[:c])
+#			val.extend(lines[c:])
+#		else:
+#			c = args.max_samples - len(train)
+#			train.extend(lines[:c])
+#			val.extend(lines[c: (c + int(args.split_val * c))])
+#
+#	with gzip.open(f'train_{suffix}.txt.gz', 'wt') as f:
+#		print('train', suffix, len(train))
+#		f.write('\n'.join(train))
+#	with gzip.open(f'val_{suffix}.txt.gz', 'wt') as f:
+#		f.write('\n'.join(val))
+#		print('val', suffix, len(val))
+#
 
-	with gzip.open(f'train_{suffix}.txt.gz', 'wt') as f:
-		print('train', suffix, len(train))
-		f.write('\n'.join(train))
-	with gzip.open(f'val_{suffix}.txt.gz', 'wt') as f:
-		f.write('\n'.join(val))
-		print('val', suffix, len(val))
-
+f = open('sample.html', 'w')
+f.write('<html><body>')
+for source in sourced:
+	f.write('<h1>{source}</h1>')
+	f.write('<table>')
+	lines = sourced[source][:]
+	random.seed(1)
+	random.shuffle(lines)
+	for i in range(10):
+		splitted = lines[i].split(',')
+		filename = splitted[-2]
+		transcript = splitted[2]
+		encoded = base64.b64encode(open(filename, 'rb').read()).decode('utf-8').replace('\n', '')
+		f.write(f'<tr><td>{filename}</td> <td><video controls><source type="audio/wav" src="data:audio/wav;base64,{encoded}"></source></video></td> <td>{transcript}</td></tr>\n')
+	f.write('</table>')
