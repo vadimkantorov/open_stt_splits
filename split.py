@@ -8,8 +8,8 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--metadata_file', default = 'public_meta_data_v03.csv')
 parser.add_argument('--bad', nargs = '*', default = [
-	'bad_trainval_v03.csv',
-	'bad_public_train_v03.csv'
+	'bad_trainval_v03.csv', # https://github.com/snakers4/open_stt/files/3177895/bad_trainval_v03.zip
+	'bad_public_train_v03.csv' # https://github.com/snakers4/open_stt/files/3177907/bad_public_train_v03.zip
 ])
 parser.add_argument('--sources_hard', nargs = '*', default = [
 	'asr_public_phone_calls_2',
@@ -64,17 +64,18 @@ sourced = {k : [t[1] for t in g] for k, g in itertools.groupby(sorted([(source, 
 #
 
 f = open('sample.html', 'w')
-f.write('<html><body>')
-for source in sourced:
-	f.write('<h1>{source}</h1>')
-	f.write('<table>')
-	lines = sourced[source][:]
-	random.seed(1)
-	random.shuffle(lines)
-	for i in range(10):
-		splitted = lines[i].split(',')
-		filename = splitted[-2]
-		transcript = splitted[2]
-		encoded = base64.b64encode(open(filename, 'rb').read()).decode('utf-8').replace('\n', '')
-		f.write(f'<tr><td>{filename}</td> <td><video controls><source type="audio/wav" src="data:audio/wav;base64,{encoded}"></source></video></td> <td>{transcript}</td></tr>\n')
-	f.write('</table>')
+f.write('<html><meta charset="UTF-8"><body>')
+for source in args.sources_ok:
+        f.write(f'<h1>{source}</h1>')
+        f.write('<table>')
+        lines = sourced[source][:]
+        random.seed(1)
+        random.shuffle(lines)
+        for i in range(10):
+                splitted = lines[i].split(',')
+                filename = splitted[-2]
+                transcript = splitted[2]
+                encoded = base64.b64encode(open(filename, 'rb').read()).decode('utf-8').replace('\n', '')
+                f.write(f'<tr><td>{filename}</td> <td><audio controls src="data:audio/wav;base64,{encoded}"/></td><td>{transcript}</td></tr>\n')
+        f.write('</table>')
+
