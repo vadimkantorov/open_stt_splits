@@ -62,14 +62,14 @@ def split(by_source, sources, spec, sample_keyword = 'sample', seed = 1):
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--metadata', default = 'public_meta_data_v03.csv')
-	parser.add_argument('--bad', nargs = '*', default = ['bad_trainval_v03.csv', 'bad_public_train_v03.csv'])
+	parser.add_argument('--exclude', default = 'public_exclude_file_v5.csv')
 	parser.add_argument('--samples', default = 'open_stt_splits.html')
 	parser.add_argument('--splits', default = 'splits')
 	parser.add_argument('--gzip', action = 'store_true')
 	args = parser.parse_args()
 
 	meta = {os.path.basename(s[-2]) : (s[1].split('/')[1], l.strip()) for l in open(args.metadata) for s in [l.split(',')] if s[0]}
-	bad = set(os.path.basename(s[1].strip()) for b in args.bad for l in open(b) for s in [l.split(',')] if s[0])
+	bad = set(os.path.basename(s[1].strip()) for l in open(open(args.exclude)) for s in [l.split(',')] if s[0])
 	good = {k : meta[k] for k in meta.keys() - bad}
 	by_source = {k : [t[1] for t in g] for k, g in itertools.groupby(sorted([(source, line) for k, (source, line) in good.items()], key = lambda t: t[0]), key = lambda t: t[0])}
 
