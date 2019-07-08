@@ -61,36 +61,29 @@ def split(by_source, sources, spec, sample_keyword = 'sample', seed = 1):
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
-	parser.add_argument('--metadata', default = 'public_meta_data_v03.csv')
+	parser.add_argument('--metadata', default = 'public_meta_data_v04_fx.csv')
 	parser.add_argument('--exclude', default = 'public_exclude_file_v5.csv')
 	parser.add_argument('--samples', default = 'open_stt_splits.html')
 	parser.add_argument('--splits', default = 'splits')
 	parser.add_argument('--gzip', action = 'store_true')
 	args = parser.parse_args()
 
-	meta = {os.path.basename(s[-2]) : (s[1].split('/')[1], l.strip()) for l in open(args.metadata) for s in [l.split(',')] if s[0]}
+	meta = {os.path.basename(s[-1].strip()) : (s[2], l.strip()) for l in open(args.metadata) for s in [l.split(',')] if s[0]}
 	exclude = set(os.path.basename(s[1]) for l in open(args.exclude) for s in [l.split(',')] if s[0])
 	good = {k : meta[k] for k in meta.keys() - exclude}
 	by_source = {k : [t[1] for t in g] for k, g in itertools.groupby(sorted([(source, line) for k, (source, line) in good.items()], key = lambda t: t[0]), key = lambda t: t[0])}
-
 	samples_html(by_source, args.samples)
 
 	clean = split(by_source, ['voxforge_ru', 'ru_ru', 'russian_single', 'public_lecture_1', 'public_series_1'], dict(train = 0.95, val = 0.05))
+	addresses = split(by_source, ['tts_russian_addresses_rhvoice_4voices'], dict(train_mini = len(clean['train'])))
+
+	mixed_ = split(by_source, ['asr_calls_2_val', 'buriy_audiobooks_2_val', 'public_youtube700_val'], dict(val = 1))
+	mixed = split(by_source, ['private_buriy_audiobooks_2', 'public_youtube700', 'public_youtube1200', 'public_youtube1200_hq'], dict(train = 1))
+	mixed['train'] += clean['train']
+	mixed['train'] += addresses['train_mini']
+	mixed['val'] = mixed_['val']
+
 	dump(clean, args.splits, 'clean', gz = args.gzip)
-
-	addresses = split(by_source, ['tts_russian_addresses_rhvoice_4voices'], dict(train_mini = len(clean['train']), val_mini = len(clean['val'])))
-	dump(addresses, args.splits, 'addresses', gz = args.gzip)
-
-	audiobooks = split(by_source, ['private_buriy_audiobooks_2'], dict(train_mini1 = len(clean['train']), val_mini1 = len(clean['val']), train_mini2 = len(clean['train']), val_mini2 = len(clean['val']), train_mini3 = len(clean['train']), val_mini3 = len(clean['val']), train = (1_000_000, 500_000)), sample_keyword = 'medium')
-	audiobooks['train_mini'] = audiobooks['train_mini1'] + audiobooks['train_mini2'] + audiobooks['train_mini3']
-	audiobooks['val'] = audiobooks['val_mini1'] + audiobooks['val_mini2'] + audiobooks['val_mini3']
-	audiobooks['train'] = audiobooks['train'] + audiobooks['train_mini']
-	dump(audiobooks, args.splits, 'audiobooks', gz = args.gzip)
-
-	mixed = dict(train = clean['train'] + addresses['train_mini'] + audiobooks['train_mini1'], val = clean['val'] + addresses['val_mini'] + audiobooks['val_mini1'])
 	dump(mixed, args.splits, 'mixed', gz = args.gzip)
-
-	callsaudiobooksyoutube = split(by_source, ['asr_calls_2_val', 'buriy_audiobooks_2_val', 'public_youtube700_val'], dict(val = 1))
-	dump(val, args.splits, 'callsaudiobooksyoutube', gz = args.gzip)
 
 	unused_sources_for_now = ['asr_public_phone_calls_2', 'asr_public_phone_calls_1', 'asr_public_stories_2', 'asr_public_stories_1']
