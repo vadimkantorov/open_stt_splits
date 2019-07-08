@@ -6,7 +6,7 @@ wget https://github.com/snakers4/open_stt/files/3348314/public_exclude_file_v5.z
 wget https://github.com/snakers4/open_stt/files/3348312/public_exclude_file_v5.z02.zip
 wget https://github.com/snakers4/open_stt/files/3348313/public_exclude_file_v5.z03.zip
 
-cat public_exclude_file_v5.z01 public_exclude_file_v5.z02 public_exclude_file_v5.z03 public_exclude_file_v5.zip > public_exclude_file_v5_.zip
+cat public_exclude_file_v5.z01.zip public_exclude_file_v5.z02.zip public_exclude_file_v5.z03.zip public_exclude_file_v5.zip > public_exclude_file_v5_.zip
 unzip public_exclude_file_v5_.zip
 ```
 
