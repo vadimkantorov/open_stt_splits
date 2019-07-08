@@ -69,8 +69,8 @@ if __name__ == '__main__':
 	args = parser.parse_args()
 
 	meta = {os.path.basename(s[-2]) : (s[1].split('/')[1], l.strip()) for l in open(args.metadata) for s in [l.split(',')] if s[0]}
-	bad = set(os.path.basename(s[1].strip()) for l in open(open(args.exclude)) for s in [l.split(',')] if s[0])
-	good = {k : meta[k] for k in meta.keys() - bad}
+	exclude = set(os.path.basename(s[1]) for l in open(args.exclude) for s in [l.split(',')] if s[0])
+	good = {k : meta[k] for k in meta.keys() - exclude}
 	by_source = {k : [t[1] for t in g] for k, g in itertools.groupby(sorted([(source, line) for k, (source, line) in good.items()], key = lambda t: t[0]), key = lambda t: t[0])}
 
 	samples_html(by_source, args.samples)
@@ -90,4 +90,7 @@ if __name__ == '__main__':
 	mixed = dict(train = clean['train'] + addresses['train_mini'] + audiobooks['train_mini1'], val = clean['val'] + addresses['val_mini'] + audiobooks['val_mini1'])
 	dump(mixed, args.splits, 'mixed', gz = args.gzip)
 
-	unused_sources_for_now = ['asr_public_phone_calls_2', 'asr_public_phone_calls_1', 'asr_public_stories_2', 'asr_public_stories_1', 'public_youtube700']
+	callsaudiobooksyoutube = split(by_source, ['asr_calls_2_val', 'buriy_audiobooks_2_val', 'public_youtube700_val'], dict(val = 1))
+	dump(val, args.splits, 'callsaudiobooksyoutube', gz = args.gzip)
+
+	unused_sources_for_now = ['asr_public_phone_calls_2', 'asr_public_phone_calls_1', 'asr_public_stories_2', 'asr_public_stories_1']
