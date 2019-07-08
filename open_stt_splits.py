@@ -78,7 +78,7 @@ if __name__ == '__main__':
 	addresses = split(by_source, ['tts_russian_addresses_rhvoice_4voices'], dict(train_mini = len(clean['train'])))
 
 	mixed_ = split(by_source, ['asr_calls_2_val', 'buriy_audiobooks_2_val', 'public_youtube700_val'], dict(val = None))
-	mixed = split(by_source, ['private_buriy_audiobooks_2', 'public_youtube700', 'public_youtube1120', 'public_youtube1120_hq'], dict(train = None), exclude = mixed_['val'])
+	mixed = split(by_source, ['private_buriy_audiobooks_2', 'public_youtube700', 'public_youtube1120', 'public_youtube1120_hq', 'radio_2'], dict(train = None), exclude = mixed_['val'])
 	mixed['train'] += clean['train']
 	mixed['train'] += addresses['train_mini']
 	mixed['val'] = mixed_['val']
