@@ -66,9 +66,10 @@ if __name__ == '__main__':
 	parser.add_argument('--samples', default = 'open_stt_splits.html')
 	parser.add_argument('--splits', default = 'splits')
 	parser.add_argument('--gzip', action = 'store_true')
+	parser.add_argument('--min_kb', type = int, default = 20)
 	args = parser.parse_args()
 
-	meta = {os.path.basename(s[-1].strip()) : (s[2], l.strip()) for l in open(args.metadata) for s in [l.split(',')] if s[0]}
+	meta = { os.path.basename(s[-1].strip()) : (s[2], l.strip()) for l in open(args.metadata) for s in [l.split(',')] if s[0] and float(s[5]) >= args.min_kb } 
 	exclude = set(os.path.basename(s[1]) for l in open(args.exclude) for s in [l.split(',')] if s[0])
 	good = {k : meta[k] for k in meta.keys() - exclude}
 	by_source = {k : [t[1] for t in g] for k, g in itertools.groupby(sorted([(source, line) for k, (source, line) in good.items()], key = lambda t: t[0]), key = lambda t: t[0])}
