@@ -8,7 +8,12 @@ wget https://github.com/snakers4/open_stt/files/3348313/public_exclude_file_v5.z
 
 cat public_exclude_file_v5.z01.zip public_exclude_file_v5.z02.zip public_exclude_file_v5.z03.zip public_exclude_file_v5.zip > public_exclude_file_v5_.zip
 unzip public_exclude_file_v5_.zip
-rm public_exclude_file_v5.z01.zip public_exclude_file_v5.z02.zip public_exclude_file_v5.z03.zip public_exclude_file_v5.zip public_exclude_file_v5_.zip
+
+wget https://github.com/snakers4/open_stt/files/3386441/exclude_df_youtube_1120.zip
+unzip exclude_df_youtube_1120.zip
+
+rm public_exclude_file_v5.z01.zip public_exclude_file_v5.z02.zip public_exclude_file_v5.z03.zip public_exclude_file_v5.zip public_exclude_file_v5_.zip exclude_df_youtube_1120.zip
+
 ```
 
 ```
