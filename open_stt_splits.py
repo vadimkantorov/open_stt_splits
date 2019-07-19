@@ -32,7 +32,7 @@ def dump(by_source, splits_dir, subset_name, gz = True):
 		fname = os.path.join(splits_dir, f'{subset_name}_{split_name}.csv')
 		f = (gzip.open(fname + '.gz', 'wt') if gz else open(fname, 'w'))
 		print(fname, '\t\tutterances:', len(subset) // 1000, 'K  hours:', int(sum(float(line.split(',')[3]) for line in subset) / 3600))
-		f.write('\n'.join(subset))
+		f.write('\n'.join(','.join([l[-1], l[-3], l[3]]) for l in subset for s in [l.split(',')]))
 
 def split(by_source, sources, spec, sample_keyword = 'sample', seed = 1, exclude = []):
 	#exclude = set(os.path.basename(s[-1].strip()) for l in exclude for s in [l.split(',')])
@@ -62,7 +62,7 @@ def split(by_source, sources, spec, sample_keyword = 'sample', seed = 1, exclude
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--metadata', default = 'public_meta_data_v04_fx.csv')
-	parser.add_argument('--exclude', default = 'public_exclude_file_v5.csv')
+	parser.add_argument('--exclude', nargs = '*', default = ['public_exclude_file_v5.csv', 'exclude_df_youtube_1120.csv'])
 	parser.add_argument('--samples', default = 'open_stt_splits.html')
 	parser.add_argument('--splits', default = 'splits')
 	parser.add_argument('--gzip', action = 'store_true')
@@ -70,7 +70,7 @@ if __name__ == '__main__':
 	args = parser.parse_args()
 
 	meta = { os.path.basename(s[-1].strip()) : (s[2], l.strip()) for l in open(args.metadata) for s in [l.split(',')] if s[0] and float(s[5]) >= args.min_kb } 
-	exclude = set(os.path.basename(s[1]) for l in open(args.exclude) for s in [l.split(',')] if s[0])
+	exclude = set(os.path.basename(s[1]) for f in args.exclude for l in open(f) for s in [l.split(',')] if s[0])
 	good = {k : meta[k] for k in meta.keys() - exclude}
 	by_source = {k : [t[1] for t in g] for k, g in itertools.groupby(sorted([(source, line) for k, (source, line) in good.items()], key = lambda t: t[0]), key = lambda t: t[0])}
 	samples_html(by_source, args.samples)
