@@ -32,7 +32,7 @@ def dump(by_source, splits_dir, subset_name, gz = True):
 		fname = os.path.join(splits_dir, f'{subset_name}_{split_name}.csv')
 		f = (gzip.open(fname + '.gz', 'wt') if gz else open(fname, 'w'))
 		print(fname, '\t\tutterances:', len(subset) // 1000, 'K  hours:', int(sum(float(line.split(',')[3]) for line in subset) / 3600))
-		f.write('\n'.join(','.join([l[-1], l[-3], l[3]]) for l in subset for s in [l.split(',')]))
+		f.write('\n'.join(','.join([s[-1], s[-3], s[3]]) for l in subset for s in [l.split(',')]))
 
 def split(by_source, sources, spec, sample_keyword = 'sample', seed = 1, exclude = []):
 	#exclude = set(os.path.basename(s[-1].strip()) for l in exclude for s in [l.split(',')])
