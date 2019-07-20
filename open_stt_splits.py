@@ -63,15 +63,35 @@ if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--metadata', default = 'public_meta_data_v04_fx.csv')
 	parser.add_argument('--exclude', nargs = '*', default = ['public_exclude_file_v5.csv', 'exclude_df_youtube_1120.csv'])
+	parser.add_argument('--benchmark', default = 'benchmark_v05_public.csv')
 	parser.add_argument('--samples', default = 'open_stt_splits.html')
 	parser.add_argument('--splits', default = 'splits')
 	parser.add_argument('--gzip', action = 'store_true')
 	parser.add_argument('--min_kb', type = int, default = 20)
+	parser.add_argument('--benchmark-max-cer', default = dict(
+		tts_russian_addresses_rhvoice_4voices = 0.2,
+		private_buriy_audiobooks_2 = 0.1,
+		public_youtube700 = 0.2,
+		public_youtube1120 = 0.2,
+		public_youtube1120_hq = 0.2,
+		public_lecture_1 = 0.2,
+		public_series_1 = 0.2,
+		radio_2 = 0.2,
+		asr_public_phone_calls_1 = 0.2,
+		asr_public_phone_calls_2 = 0.2,
+		asr_public_stories_1 = 0.2,
+		asr_public_stories_2 = 0.2,
+		ru_tts = 0.4,
+		ru_ru = 0.4,
+		voxforge_ru = 0.4,
+		russian_single = 0.4
+	))
 	args = parser.parse_args()
 
 	meta = { os.path.basename(s[-1].strip()) : (s[2], l.strip()) for l in open(args.metadata) for s in [l.split(',')] if s[0] and float(s[5]) >= args.min_kb } 
 	exclude = set(os.path.basename(s[1]) for f in args.exclude for l in open(f) for s in [l.split(',')] if s[0])
-	good = {k : meta[k] for k in meta.keys() - exclude}
+	benchmark = set(os.path.basename(s[1]) for i, l in enumerate(open(args.benchmark)) if i > 0 and ',' in l for s in [l.split(',')] if float(s[-3]) <= args.benchmark_max_cer[s[-1].strip()])
+	good = { k : meta[k] for k in meta.keys() - exclude if k in benchmark or '_val' in meta[k][0] }
 	by_source = {k : [t[1] for t in g] for k, g in itertools.groupby(sorted([(source, line) for k, (source, line) in good.items()], key = lambda t: t[0]), key = lambda t: t[0])}
 	samples_html(by_source, args.samples)
 

@@ -12,11 +12,19 @@ unzip public_exclude_file_v5_.zip
 wget https://github.com/snakers4/open_stt/files/3386441/exclude_df_youtube_1120.zip
 unzip exclude_df_youtube_1120.zip
 
-rm public_exclude_file_v5.z01.zip public_exclude_file_v5.z02.zip public_exclude_file_v5.z03.zip public_exclude_file_v5.zip public_exclude_file_v5_.zip exclude_df_youtube_1120.zip
+wget https://ru-open-stt.ams3.digitaloceanspaces.com/benchmark_v05_public.csv.zip
+zcat benchmark_v05_public.csv.zip > benchmark_v05_public.csv
+
+rm public_exclude_file_v5.z01.zip public_exclude_file_v5.z02.zip public_exclude_file_v5.z03.zip public_exclude_file_v5.zip public_exclude_file_v5_.zip exclude_df_youtube_1120.zip benchmark_v05_public.csv.zip
 
 ```
 
 ```
+splits/clean_train.csv          utterances: 26 K  hours: 48
+splits/clean_val.csv            utterances: 1 K  hours: 2
+splits/mixed_train.csv          utterances: 2046 K  hours: 2698
+splits/mixed_val.csv            utterances: 28 K  hours: 17
+
 splits/clean_train.csv          utterances: 28 K  hours: 50
 splits/clean_val.csv            utterances: 1 K  hours: 2
 splits/mixed_train.csv          utterances: 2638 K  hours: 3369
