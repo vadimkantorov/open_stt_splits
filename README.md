@@ -22,6 +22,14 @@ rm public_exclude_file_v5.z01.zip public_exclude_file_v5.z02.zip public_exclude_
 ```
 splits/clean_train.csv          utterances: 26 K  hours: 48
 splits/clean_val.csv            utterances: 1 K  hours: 2
+splits/mixed_train.csv          utterances: 2020 K  hours: 2686
+splits/mixed_val.csv            utterances: 15 K  hours: 9
+splits/mixed_small.csv          utterances: 202 K  hours: 268
+splits/calls_val.csv            utterances: 12 K  hours: 7
+
+
+splits/clean_train.csv          utterances: 26 K  hours: 48
+splits/clean_val.csv            utterances: 1 K  hours: 2
 splits/mixed_train.csv          utterances: 2046 K  hours: 2698
 splits/mixed_val.csv            utterances: 28 K  hours: 17
 

@@ -5,15 +5,14 @@ import random
 import itertools
 import argparse
 
-def samples_html(by_source, samples_html_path, seed = 1, K = 10):
+def samples_html(by_source, samples_html_path, K = 10):
 	f = open(samples_html_path, 'w')
 	f.write('<html><meta charset="UTF-8"><body>')
 	for source, lines in sorted(by_source.items()):
 		f.write(f'<h1>{source}</h1>')
 		f.write('<table>')
 		lines = lines[:]
-		random.seed(seed)
-		random.shuffle(lines)
+		shuffle(lines)
 		for i in range(K):
 				splitted = lines[i].split(',')
 				filename = splitted[-1].strip()
@@ -34,13 +33,14 @@ def dump(by_source, splits_dir, subset_name, gz = True):
 		print(fname, '\t\tutterances:', len(subset) // 1000, 'K  hours:', int(sum(float(line.split(',')[3]) for line in subset) / 3600))
 		f.write('\n'.join(','.join([s[-1], s[-3], s[3]]) for l in subset for s in [l.split(',')]))
 
-def split(by_source, sources, spec, sample_keyword = 'sample', seed = 1, exclude = []):
-	#exclude = set(os.path.basename(s[-1].strip()) for l in exclude for s in [l.split(',')])
-	lines = [l for source in sources for l in by_source[source]]# if os.path.basename(l.split(',')[-1].strip()) not in exclude]
+def shuffle(lines, seed = 1):
 	random.seed(seed)
 	random.shuffle(lines)
-	res = {}
 
+def split(by_source, sources, spec, sample_keyword = 'sample'):
+	lines = [l for source in sources for l in by_source[source]]
+	res = {}
+	shuffle(lines)
 	cnt_ = lambda cnt, lines: len(lines) if cnt is None else cnt if isinstance(cnt, int) else int(len(lines) * cnt)
 
 	k = 0
@@ -96,15 +96,18 @@ if __name__ == '__main__':
 	samples_html(by_source, args.samples)
 
 	clean = split(by_source, ['voxforge_ru', 'ru_RU', 'russian_single', 'public_lecture_1', 'public_series_1'], dict(train = 0.95, val = 0.05))
-	addresses = split(by_source, ['tts_russian_addresses_rhvoice_4voices'], dict(train_mini = len(clean['train'])))
 
-	mixed_ = split(by_source, ['asr_calls_2_val', 'buriy_audiobooks_2_val', 'public_youtube700_val'], dict(val = None))
-	mixed = split(by_source, ['private_buriy_audiobooks_2', 'public_youtube700', 'public_youtube1120', 'public_youtube1120_hq', 'radio_2'], dict(train = None), exclude = mixed_['val'])
+	mixed_ = split(by_source, ['buriy_audiobooks_2_val', 'public_youtube700_val'], dict(val = None))
+	mixed = split(by_source, ['private_buriy_audiobooks_2', 'public_youtube700', 'public_youtube1120', 'public_youtube1120_hq', 'radio_2'], dict(train = None))
 	mixed['train'] += clean['train']
-	mixed['train'] += addresses['train_mini']
+	shuffle(mixed['train'])
 	mixed['val'] = mixed_['val']
+	mixed['small'] = mixed['train'][:int(0.1 * len(mixed['train']))]
+
+	calls = split(by_source, ['asr_calls_2_val'], dict(val = None))
 
 	dump(clean, args.splits, 'clean', gz = args.gzip)
 	dump(mixed, args.splits, 'mixed', gz = args.gzip)
+	dump(calls, args.splits, 'calls', gz = args.gzip)
 
-	unused_sources_for_now = ['asr_public_phone_calls_2', 'asr_public_phone_calls_1', 'asr_public_stories_2', 'asr_public_stories_1']
+	unused_sources_for_now = ['asr_public_phone_calls_2', 'asr_public_phone_calls_1', 'asr_public_stories_2', 'asr_public_stories_1', 'tts_russian_addresses_rhvoice_4voices']
