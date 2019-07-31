@@ -12,6 +12,7 @@ done
 
 for f in audiobooks_2.tar.gz_ public_youtube700.tar.gz_ asr_public_phone_calls_2.tar.gz_; do
 cat $f* > tmp.tar.gz
+rm $f*
 tar -xf tmp.tar.gz
 rm tmp.tar.gz
 done
