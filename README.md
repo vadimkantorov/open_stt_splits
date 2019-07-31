@@ -5,39 +5,17 @@ aria2c http://academictorrents.com/download/a12a08b39cf3626407e10e01126cf27c1984
 
 cd ru_open_stt_wav
 
-for f in asr_calls_2_val.tar.gz buriy_audiobooks_2_val.tar.gz public_youtube700_val.tar.gz asr_public_stories_1.tar.gz asr_public_stories_2.tar.gz public_lecture_1.tar.gz public_series_1.tar.gz public_youtube1120.tar.gz radio_2.tar.gz ru_ru.tar.gz; do
-  tar -xf $f
-  rm $f
+for f in asr_calls_2_val.tar.gz buriy_audiobooks_2_val.tar.gz public_youtube700_val.tar.gz asr_public_stories_1.tar.gz asr_public_stories_2.tar.gz public_lecture_1.tar.gz public_series_1.tar.gz public_youtube1120.tar.gz radio_2.tar.gz ru_ru.tar.gz public_youtube1120_hq.tar.gz russian_single.tar.gz voxforge_ru.tar.gz asr_public_phone_calls_1.tar.gz; do
+tar -xf $f
+rm $f
 done
 
-cat asr_public_phone_calls_1.tar.gz* > asr_public_phone_calls_1_.tar.gz
-rm asr_public_phone_calls_1.tar.gz*
-tar -xf asr_public_phone_calls_1_.tar.gz
-rm asr_public_phone_calls_1_.tar.gz
+for f in audiobooks_2.tar.gz_ public_youtube700.tar.gz_ asr_public_phone_calls_2.tar.gz_; do
+cat $f* > tmp.tar.gz
+tar -xf tmp.tar.gz
+rm tmp.tar.gz
+done
 
-cat asr_public_phone_calls_2.tar.gz_* > asr_public_phone_calls_2_.tar.gz
-rm asr_public_phone_calls_2.tar.gz_*
-tar -xf asr_public_phone_calls_2_.tar.gz
-rm asr_public_phone_calls_2_.tar.gz
-
-cat audiobooks_2.tar.gz_* > audiobooks_2_.tar.gz
-tar -xf audiobooks_2_.tar.gz
-
-cat public_youtube1120_hq.tar.gz* > public_youtube1120_hq_.tar.gz
-tar -xf public_youtube1120_hq_.tar.gz
-
-cat public_youtube700.tar.gz_* > public_youtube700_.tar.gz
-tar -xf public_youtube700.tar.gz
-
-cat russian_single.tar.gz* > russian_single_.tar.gz
-tar -xf russian_single_.tar.gz
-
-cat voxforge_ru.tar.gz* > voxforge_ru_.tar.gz
-tar -xf voxforge_ru_.tar.gz
-
-cat tts_russian_addresses_rhvoice_4voices.tar.gz* > tts_russian_addresses_rhvoice_4voices_.tar.gz
-tar -xf tts_russian_addresses_rhvoice_4voices_.tar.gz
-rm tts_russian_addresses_rhvoice_4voices.tar.gz tts_russian_addresses_rhvoice_4voices_.tar.gz
 ```
 # Download exclude fils
 ```shell
