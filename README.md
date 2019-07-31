@@ -5,7 +5,7 @@ aria2c http://academictorrents.com/download/a12a08b39cf3626407e10e01126cf27c1984
 
 cd ru_open_stt_wav
 
-for f in asr_public_stories_1.tar.gz asr_public_stories_2.tar.gz buriy_audiobooks_2_val.tar.gz public_lecture_1.tar.gz public_series_1.tar.gz public_youtube1120.tar.gz radio_2.tar.gz ru_ru.tar.gz; do
+for f in asr_calls_2_val.tar.gz buriy_audiobooks_2_val.tar.gz public_youtube700_val.tar.gz asr_public_stories_1.tar.gz asr_public_stories_2.tar.gz public_lecture_1.tar.gz public_series_1.tar.gz public_youtube1120.tar.gz radio_2.tar.gz ru_ru.tar.gz; do
   tar -xf $f
   rm $f
 done
