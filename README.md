@@ -17,7 +17,7 @@ rm tmp.tar.gz
 done
 
 ```
-# Download exclude fils
+# Download exclude files
 ```shell
 wget https://ru-open-stt.ams3.digitaloceanspaces.com/public_meta_data_v04_fx.csv
 
