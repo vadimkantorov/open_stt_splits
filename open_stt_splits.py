@@ -105,9 +105,18 @@ if __name__ == '__main__':
 	mixed['small'] = mixed['train'][:int(0.1 * len(mixed['train']))]
 
 	calls = split(by_source, ['asr_calls_2_val'], dict(val = None))
-
+	
+	mixed_noradio = split(by_source, ['public_youtube700', 'public_youtube1120', 'public_youtube1120_hq'], dict(train = None))
+	radio_ = split(by_source, ['private_buriy_audiobooks_2', 'radio_2'], dict(train0 = 0.1, train1 = 0.1, train2 = 0.1, train3 = 0.1, train4 = 0.1, train5 = 0.1, train6 = 0.1, train7 = 0.1, train8 = 0.1, train9 = 0.1))
+	radio['val'] = radio_['train0']
+	radio['train1'] = mixed_noradio['train'] + radio_['train1']
+	for k in range(2, 10):
+		radio[f'train{k}'] = radio[f'train{k-1}'] + radio_['train{k}']
+	
+	
 	dump(clean, args.splits, 'clean', gz = args.gzip)
 	dump(mixed, args.splits, 'mixed', gz = args.gzip)
 	dump(calls, args.splits, 'calls', gz = args.gzip)
-
+	dump(radio, args.splits, 'radio', gz = args.gzip)
+	
 	unused_sources_for_now = ['asr_public_phone_calls_2', 'asr_public_phone_calls_1', 'asr_public_stories_2', 'asr_public_stories_1', 'tts_russian_addresses_rhvoice_4voices']
