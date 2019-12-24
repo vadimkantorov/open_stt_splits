@@ -85,7 +85,7 @@ if __name__ == '__main__':
 		ru_ru = 0.4,
 		voxforge_ru = 0.4,
 		russian_single = 0.4
-	))
+	), action = type('', (argparse.Action, ), dict(__call__ = lambda a, p, n, v, o: getattr(n, a.dest).update(dict([v.split('=')])))) )
 	args = parser.parse_args()
 
 	meta = { os.path.basename(s[-1].strip()) : (s[2], l.strip()) for l in open(args.metadata) for s in [l.split(',')] if s[0] and float(s[5]) >= args.min_kb } 
